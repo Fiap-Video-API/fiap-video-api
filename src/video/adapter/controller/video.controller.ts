@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Res, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Post, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import * as multer from 'multer';
@@ -9,8 +9,10 @@ import { Response } from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
 import { IVideoService } from 'src/video/core/application/services/video.service.port';
+import { JwtAuthGuard } from 'src/video/adapter/controller/jwt-auth.guard';
 
 @Controller('video')
+@UseGuards(JwtAuthGuard)
 export class VideoController {
 
   constructor(private readonly videoService: IVideoService) {}

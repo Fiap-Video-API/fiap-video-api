@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MessageModule } from './message/message.module';
 import { DatabaseModule } from './database/database.module';
 import { EmailModule } from './email/email.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './video/adapter/controller/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -16,6 +18,9 @@ import { EmailModule } from './email/email.module';
     EmailModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [{
+    provide: APP_GUARD,
+    useClass: JwtAuthGuard,
+  },],
 })
 export class AppModule {}
