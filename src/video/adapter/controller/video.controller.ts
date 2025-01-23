@@ -1,18 +1,21 @@
-import { Controller, HttpException, HttpStatus, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Post, Res, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import * as multer from 'multer';
-import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { Video } from '../../core/domain/Video';
-import { VideoService } from '../../core/application/services/video.service';
 
-@Controller('upload')
+import { Response } from 'express';
+import * as path from 'path';
+import * as fs from 'fs';
+import { IVideoService } from 'src/video/core/application/services/video.service.port';
+
+@Controller('video')
 export class VideoController {
 
-  constructor(private readonly uploadService: VideoService) {}
+  constructor(private readonly videoService: IVideoService) {}
 
-  @Post()
+  @Post('upload')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Arquivo para upload',
@@ -40,6 +43,21 @@ export class VideoController {
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<Video> {
-    return this.uploadService.saveFile(file);
+    return this.videoService.processarArquivo(file);
+  }
+
+  @Get('download/:id')
+  downloadFile(
+    @Param('id') id: string,
+    @Res({ passthrough: true }) res: Response,
+  ): StreamableFile {
+    
+    res.set({
+        'Content-Type': 'application/zip',
+        'Content-Disposition': `attachment; filename="${id}.zip"`,
+      });
+
+    const file = fs.createReadStream(path.resolve(process.env.PATH_DOWNLOAD, id + '.zip'));
+    return new StreamableFile(file);
   }
 }

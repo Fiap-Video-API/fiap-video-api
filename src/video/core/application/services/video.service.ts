@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { createWriteStream } from 'fs';
-import { join } from 'path';
 import { Video } from '../../domain/Video';
 import { VideoStatus } from '../../domain/VideoStatus';
-import { MessageConnectService } from 'src/message/message-connect.service';
+import { IVideoService } from './video.service.port';
+import { IMessageConnectService } from 'src/message/message-connect.service.port';
 
 @Injectable()
-export class VideoService {
+export class VideoService implements IVideoService {
 
-  constructor(private readonly messageConnectService: MessageConnectService){}
+  constructor(private readonly messageConnectService: IMessageConnectService){}
 
-  async saveFile(file: Express.Multer.File): Promise<Video> {
+  async processarArquivo(file: Express.Multer.File): Promise<Video> {
 
     const video = {
       id: '',
@@ -19,7 +18,13 @@ export class VideoService {
       pathZip: null
     };
 
-    this.messageConnectService.enviarVideoProcessamento(JSON.stringify(video));
+    // this.messageConnectService.enviarVideoProcessamento(JSON.stringify(video));
+
+    return video;
+
+  }
+
+  async registrarDownload(video: Video): Promise<Video> {
 
     return video;
 

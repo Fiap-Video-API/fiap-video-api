@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageCommand } from '@aws-sdk/client-sqs';
+import { IMessageConnectService } from './message-connect.service.port';
 
 @Injectable()
-export class MessageConnectService {
+export class MessageConnectService implements IMessageConnectService {
   
   private readonly client: SQSClient;
 
