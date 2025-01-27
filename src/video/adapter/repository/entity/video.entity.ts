@@ -6,6 +6,12 @@ export class VideoEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string | null;
 
+  @Column({ length: 50 })
+  idUsuario: string;
+  
+  @Column({ length: 250 })
+  emailUsuario: string;
+
   @Column({ length: 20 })
   status: string;
   
@@ -14,5 +20,8 @@ export class VideoEntity {
 
   @Column({ length: 50 })
   pathZip: string;
+
+  @Column()
+  dowload: boolean;
 
 }

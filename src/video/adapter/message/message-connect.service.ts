@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageCommand } from '@aws-sdk/client-sqs';
-import { IMessageConnectService } from '../core/message-connect.service.port';
 import { IVideoService } from 'src/video/core/application/services/video.service.port';
 import { Video } from 'src/video/core/domain/Video';
+import { IMessageConnectService } from 'src/video/core/application/services/message-connect.service.port';
 
 @Injectable()
 export class MessageConnectService implements IMessageConnectService {
@@ -10,10 +10,12 @@ export class MessageConnectService implements IMessageConnectService {
   private readonly client: SQSClient;
 
   constructor(
+    @Inject(forwardRef(() => IVideoService))
     private readonly videoService: IVideoService
   ) {
     this.client = new SQSClient({
       region: process.env.AWS_REGION,
+      endpoint: process.env.AWS_SQS_ENDPOINT,
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -66,7 +68,7 @@ export class MessageConnectService implements IMessageConnectService {
       QueueUrl: process.env.QUEUE_PROCESSADOS,
       MaxNumberOfMessages: maxMessages,
       WaitTimeSeconds: 60,
-      VisibilityTimeout: 360
+      VisibilityTimeout: 360,
     });
 
     const response = await this.client.send(command);

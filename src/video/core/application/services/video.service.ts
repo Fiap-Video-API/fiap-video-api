@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Video } from '../../domain/Video';
 import { VideoStatus } from '../../domain/VideoStatus';
 import { IVideoService } from './video.service.port';
-import { IMessageConnectService } from 'src/message/core/message-connect.service.port';
+import { IMessageConnectService } from 'src/video/core/application/services/message-connect.service.port';
 import { IVideoRepository } from '../repository/video-repository.port';
 import { Transactional } from 'src/database/transactional';
-import { IEmailService } from 'src/email/core/email.service.port';
+import { IEmailService } from 'src/video/core/application/services/email.service.port';
 
 @Injectable()
 export class VideoService implements IVideoService {
 
   constructor(
+    @Inject(forwardRef(() => IMessageConnectService))
     private readonly messageConnectService: IMessageConnectService,
     private readonly videoRepository: IVideoRepository,
     private readonly emailService: IEmailService
