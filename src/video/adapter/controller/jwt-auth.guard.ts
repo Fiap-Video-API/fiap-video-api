@@ -34,6 +34,11 @@ export class JwtAuthGuard implements CanActivate {
       this.validateTokenClaims(payload);
       request.user = payload;
 
+      // Verificar se o usuário aceitou os termos da LGPD
+      if (payload['custom:lgpdConsent'] !== 'true') {
+        throw new UnauthorizedException('Usuário não aceitou os termos da LGPD');
+      }
+
       return true;
     } catch (error) {
       console.error('Erro ao validar o token:', error);

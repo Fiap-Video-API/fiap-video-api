@@ -1,11 +1,11 @@
 services:
   
-  # LocalStack para simular SQS local
-  # OBS: leia o README.md para executar os comandos necessários para criação das filas.
+  # LocalStack para simular SQS e SES local
+  # OBS: leia o README.md para executar os comandos necessários para criação das filas e config SES.
   localstack:
     image: localstack/localstack:latest
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=sqs
+      - SERVICES=sqs,ses
       - AWS_DEFAULT_REGION=us-east-1

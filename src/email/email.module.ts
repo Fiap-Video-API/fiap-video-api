@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SESClient } from '@aws-sdk/client-ses';
-import { EmailService } from './email.service';
-import { IEmailService } from './email.service.port';
+import { EmailService } from './adapter/email.service';
+import { IEmailService } from './core/email.service.port';
 
 @Module({
   providers: [

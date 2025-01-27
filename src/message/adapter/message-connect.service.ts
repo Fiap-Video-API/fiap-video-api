@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageCommand } from '@aws-sdk/client-sqs';
-import { IMessageConnectService } from './message-connect.service.port';
+import { IMessageConnectService } from '../core/message-connect.service.port';
+import { IVideoService } from 'src/video/core/application/services/video.service.port';
+import { Video } from 'src/video/core/domain/Video';
 
 @Injectable()
 export class MessageConnectService implements IMessageConnectService {
   
   private readonly client: SQSClient;
 
-  constructor() {
+  constructor(
+    private readonly videoService: IVideoService
+  ) {
     this.client = new SQSClient({
       region: process.env.AWS_REGION,
       credentials: {
@@ -16,6 +20,35 @@ export class MessageConnectService implements IMessageConnectService {
         sessionToken: process.env.AWS_SESSION_TOKEN,
       },
     });
+  }
+
+  async onModuleInit() {
+    console.log('MessageConnectService: SQS Listener started...');
+
+    while (true) {
+      try {
+        
+        const messages = await this.receberVideosProcessados(1);
+
+        if (messages && messages.length > 0) {
+          for (const message of messages) {
+            console.log('MessageConnectService: mensagem recebida ', message.Body);
+
+            const video = JSON.parse(message.Body);
+
+            if(video instanceof Video){
+              await this.videoService.retornoProcessamento(video);
+            } else {
+              console.log('MessageConnectService: mensagem recebida é inválida e será excluida ', message.Body);
+            }
+
+            await this.excluirVíveoProcessado(message.ReceiptHandle);
+          }
+        }
+      } catch (error) {
+        console.error('MessageConnectService: Erro ao receber mensagens:', error);
+      }
+    }
   }
 
   async enviarVideoProcessamento(messageBody: string): Promise<void> {
@@ -32,6 +65,8 @@ export class MessageConnectService implements IMessageConnectService {
     const command = new ReceiveMessageCommand({
       QueueUrl: process.env.QUEUE_PROCESSADOS,
       MaxNumberOfMessages: maxMessages,
+      WaitTimeSeconds: 60,
+      VisibilityTimeout: 360
     });
 
     const response = await this.client.send(command);

@@ -1,6 +1,6 @@
 import { SendEmailCommand, SendEmailCommandInput, SESClient } from "@aws-sdk/client-ses";
 import { Inject, Injectable } from "@nestjs/common";
-import { IEmailService } from "./email.service.port";
+import { IEmailService } from "../core/email.service.port";
 
 @Injectable()
 export class EmailService implements IEmailService {
