@@ -7,7 +7,19 @@ import * as jwkToPem from 'jwk-to-pem';
 export class JwtAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+
     const request = context.switchToHttp().getRequest();
+
+    // execucao de testes
+    if (process.env.AWS_COGNITO_PERMIT_ALL) {
+      request.user = {
+        id: "123",
+        email: "teste@teste.com"
+      }
+
+      return true;
+    }
+    
     const token = this.extractToken(request);
 
     if (!token) {

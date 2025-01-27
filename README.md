@@ -58,53 +58,9 @@ aws ses verify-email-identity --email-address sender@example.com --endpoint-url=
 ```
 
 # Configurando Cognito local
-Para executar o cognito local basta utilizar docker compose, para isso execute o comando:
+No LocalStack Community (versão gratuita), muitas operações relacionadas ao Cognito (incluindo a criação de User Pools) não estão implementadas, por esse motivo é necessário conectar ao cognito real.
 
-```
-docker compose up localstack
-```
-
-Após subir o container docker para cognito, basta configurar aws cli, conforme roteiro oficial citado acima, e depois executar os comandos:
-
-```
-aws cognito-idp create-user-pool --pool-name TestUserPool --schema Name=lgpdConsent,AttributeDataType=Boolean,Mutable=true --endpoint-url=http://localhost:4566
-```
-
-Você verá uma resposta JSON com o Id do User Pool. Guarde esse valor, pois ele será necessário para configurações futuras.
-
-```
-aws cognito-idp create-user-pool-client --user-pool-id <USER_POOL_ID> --client-name TestAppClient --endpoint-url=http://localhost:4566
-```
-
-A resposta incluirá um ClientId. Guarde esse valor também.
-
-```
-aws cognito-identity create-identity-pool --identity-pool-name TestIdentityPool --allow-unauthenticated-identities --endpoint-url=http://localhost:4566
-```
-
-Crie um usuário:
-
-```
-awslocal cognito-idp admin-create-user \
-  --user-pool-id <USER_POOL_ID> \
-  --username testuser \
-  --user-attributes Name=email,Value=testuser@example.com Name=name,Value=TestUser \
-  --user-attributes Name=custom:lgpdConsent,Value=true
-  --temporary-password Test@1234
-  --endpoint-url=http://localhost:4566
-```
-
-Autenticar usuário:
-
-```
-awslocal cognito-idp admin-initiate-auth \
-  --user-pool-id <USER_POOL_ID> \
-  --client-id <CLIENT_ID> \
-  --auth-flow ADMIN_NO_SRP_AUTH \
-  --auth-parameters USERNAME=testuser,PASSWORD=Test@1234
-  --endpoint-url=http://localhost:4566
-```
-
+Defina AWS_COGNITO_PERMIT_ALL=true no .env para testar localmente sem precisar gerar um jwt valido.
 
 ## Project setup
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import * as multer from 'multer';
@@ -44,8 +44,8 @@ export class VideoController {
       limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
     }),
   )
-  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<Video> {
-    return this.videoService.processarArquivo(file);
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: any): Promise<Video> {
+    return this.videoService.registrarUpload(file, req.user.id, req.user.email);
   }
 
   @Get('download/:id')

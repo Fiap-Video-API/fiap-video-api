@@ -1,11 +1,27 @@
 services:
   
-  # LocalStack para simular SQS e SES local
-  # OBS: leia o README.md para executar os comandos necessários para criação das filas e config SES.
+  # LocalStack para simular SQS, SES local e cognito
+  # OBS: leia o README.md para executar os comandos necessários.
   localstack:
     image: localstack/localstack:latest
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=sqs,ses
+      - SERVICES=sqs,ses,cognito
       - AWS_DEFAULT_REGION=us-east-1
+
+  fiap-video-db-mysql:
+    image: mysql:8.0
+    restart: always
+    volumes:
+      - mysql_data_fiap_video:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fiap
+      MYSQL_USER: fiap
+      MYSQL_PASSWORD: fiap
+
+volumes:
+  mysql_data_fiap_video: {}
