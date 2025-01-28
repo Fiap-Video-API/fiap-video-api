@@ -5,4 +5,5 @@ export abstract class IMessageConnectService implements OnModuleInit {
   abstract receberVideosProcessados(maxMessages: number): Promise<any[]>;
   abstract enviarVideoProcessamento(messageBody: string): Promise<void>;
   abstract onModuleInit(): any;
+  abstract listenQueue(): any;
 }

@@ -13,7 +13,6 @@ async function bootstrap() {
     .setTitle('File Upload API')
     .setDescription('API para upload de arquivos grandes usando streams')
     .setVersion('1.0')
-    .addTag('upload') // Tag usada para categorizar endpoints
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

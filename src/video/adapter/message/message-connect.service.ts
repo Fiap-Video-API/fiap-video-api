@@ -26,7 +26,10 @@ export class MessageConnectService implements IMessageConnectService {
 
   async onModuleInit() {
     console.log('MessageConnectService: SQS Listener started...');
+    this.listenQueue();
+  }
 
+  async listenQueue() {
     while (true) {
       try {
         
@@ -36,15 +39,14 @@ export class MessageConnectService implements IMessageConnectService {
           for (const message of messages) {
             console.log('MessageConnectService: mensagem recebida ', message.Body);
 
-            const video = JSON.parse(message.Body);
-
-            if(video instanceof Video){
+            const video: Video = { ...JSON.parse(message.Body)};
+            try {
               await this.videoService.retornoProcessamento(video);
-            } else {
-              console.log('MessageConnectService: mensagem recebida é inválida e será excluida ', message.Body);
+              await this.excluirVíveoProcessado(message.ReceiptHandle);
+            } catch(error){
+              console.error('MessageConnectService: Erro ao processar mensagem:', error);
+              await this.excluirVíveoProcessado(message.ReceiptHandle);
             }
-
-            await this.excluirVíveoProcessado(message.ReceiptHandle);
           }
         }
       } catch (error) {
@@ -68,7 +70,7 @@ export class MessageConnectService implements IMessageConnectService {
       QueueUrl: process.env.QUEUE_PROCESSADOS,
       MaxNumberOfMessages: maxMessages,
       WaitTimeSeconds: 60,
-      VisibilityTimeout: 360,
+      VisibilityTimeout: 10,
     });
 
     const response = await this.client.send(command);

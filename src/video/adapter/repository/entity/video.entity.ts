@@ -4,7 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 export class VideoEntity {
 
   @PrimaryGeneratedColumn('uuid')
-  id: string | null;
+  id?: string | null;
 
   @Column({ length: 50 })
   idUsuario: string;
@@ -18,8 +18,8 @@ export class VideoEntity {
   @Column({ length: 50 })
   pathVideo: string;
 
-  @Column({ length: 50 })
-  pathZip: string;
+  @Column({ length: 50, nullable: true })
+  pathZip?: string;
 
   @Column()
   dowload: boolean;

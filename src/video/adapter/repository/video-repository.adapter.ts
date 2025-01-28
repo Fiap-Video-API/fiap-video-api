@@ -16,7 +16,11 @@ export class VideoRepositoryAdapter implements IVideoRepository {
   }
 
   async salvarVideo(dadosVideo: Video): Promise<Video> {
-    const Video: VideoEntity = { ...dadosVideo };
-    return await this.videoRepository.save(Video);
+    const video: VideoEntity = { ...dadosVideo };
+    return await this.videoRepository.save(video);
+  }
+
+  async adquirirPorUsuario(idUsuario: string): Promise<Video[]> {
+    return await this.videoRepository.findBy({ idUsuario });
   }
 }

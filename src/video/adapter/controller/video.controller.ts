@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Param, Post, Req, Res, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import * as multer from 'multer';
@@ -45,15 +45,27 @@ export class VideoController {
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: any): Promise<Video> {
-    return this.videoService.registrarUpload(file, req.user.id, req.user.email);
+
+    try {
+      return await this.videoService.registrarUpload(file, req.user?.id, req.user?.email);
+    } catch(error){
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('download/:id')
-  downloadFile(
+  async downloadFile(
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
-  ): StreamableFile {
+    @Req() req: any
+  ): Promise<StreamableFile> {
     
+    try {
+      await this.videoService.registrarDownload(id, req.user?.id);
+    } catch(error){
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+
     res.set({
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename="${id}.zip"`,
@@ -61,5 +73,29 @@ export class VideoController {
 
     const file = fs.createReadStream(path.resolve(process.env.PATH_DOWNLOAD, id + '.zip'));
     return new StreamableFile(file);
+  }
+
+  @Get('status')
+  async status(
+    @Req() req: any
+  ): Promise<Video[]> {
+    
+    try {
+      return await this.videoService.adquirirStatusPorUsuario(req.user?.id);
+    } catch(error){
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get('status/:id')
+  async statusVideo(
+    @Req() req: any,
+    @Param('id') id: string,
+  ): Promise<Video> {
+    try {
+      return await this.videoService.adquirirStatusPorVideo(id, req.user?.id);
+    } catch(error){
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }

@@ -6,26 +6,26 @@ export function Transactional() {
     propertyName: string,
     descriptor: PropertyDescriptor,
   ) {
-    const originalMethod = descriptor.value;
+  //   const originalMethod = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
-      const dataSource: DataSource = this.dataSource;
-      const queryRunner = dataSource.createQueryRunner();
+  //   descriptor.value = async function (...args: any[]) {
+  //     const dataSource: DataSource = this.dataSource;
+  //     const queryRunner = dataSource.createQueryRunner();
 
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+  //     await queryRunner.connect();
+  //     await queryRunner.startTransaction();
 
-      try {
-        const result = await originalMethod.apply(this, args);
-        await queryRunner.commitTransaction();
-        return result;
-      } catch (error) {
-        await queryRunner.rollbackTransaction();
-        throw error;
-      } finally {
-        await queryRunner.release();
-      }
-    };
+  //     try {
+  //       const result = await originalMethod.apply(this, args);
+  //       await queryRunner.commitTransaction();
+  //       return result;
+  //     } catch (error) {
+  //       await queryRunner.rollbackTransaction();
+  //       throw error;
+  //     } finally {
+  //       await queryRunner.release();
+  //     }
+  //   };
 
     return descriptor;
   };

@@ -6,6 +6,7 @@ import { IMessageConnectService } from 'src/video/core/application/services/mess
 import { IVideoRepository } from '../repository/video-repository.port';
 import { Transactional } from 'src/database/transactional';
 import { IEmailService } from 'src/video/core/application/services/email.service.port';
+import { ErroNegocialException } from '../exception/erro-negocial.exception';
 
 @Injectable()
 export class VideoService implements IVideoService {
@@ -23,17 +24,15 @@ export class VideoService implements IVideoService {
 
     // validando dados de entrada
     if(!idUsuario || !emailUsuario || !file) {
-      throw new Error('Dados de entrada inválidos');
+      throw new ErroNegocialException('Dados de entrada inválidos');
     }
 
     // registra upload
     const video = await this.videoRepository.salvarVideo({
-      id: null,
       idUsuario,
       emailUsuario,
       status: VideoStatus.PROCESSANDO,
       pathVideo: file.filename,
-      pathZip: null,
       dowload: false
     });
 
@@ -45,8 +44,14 @@ export class VideoService implements IVideoService {
   }
 
   @Transactional()
-  async registrarDownload(video: Video): Promise<Video> {
+  async registrarDownload(id: string, idUsuario: string): Promise<Video> {
     console.log('VideoService: Registrando download de vídeo');
+
+    const video = await this.videoRepository.adquirirPorID(id);
+
+    if (video.idUsuario != idUsuario) {
+      throw new ErroNegocialException(`Usuário sem permissão para o download`);
+    }
 
     // registra o download
     return await this.videoRepository.salvarVideo({
@@ -69,6 +74,29 @@ export class VideoService implements IVideoService {
       ...video,
     });
     
+  }
+
+  @Transactional()
+  async adquirirStatusPorUsuario(idUsuario: string): Promise<Video[]> {
+
+     // validando dados de entrada
+     if(!idUsuario) {
+      throw new ErroNegocialException('Usuário não informado');
+    }
+
+    return await this.videoRepository.adquirirPorUsuario(idUsuario);
+  }
+
+  @Transactional()
+  async adquirirStatusPorVideo(idVideo: string, idUsuario: string): Promise<Video> {
+    
+    const video = await this.videoRepository.adquirirPorID(idVideo);
+
+    if (video.idUsuario != idUsuario) {
+      throw new ErroNegocialException(`Usuário sem permissão para o acessar dados do vídeo solicitado`);
+    }
+
+    return video;
   }
 
   
