@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fiap-video-api-service
+  namespace: fiap-video
+
+spec:
+  type: LoadBalancer
+  selector:
+    app: fiap-video-api-deployment
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

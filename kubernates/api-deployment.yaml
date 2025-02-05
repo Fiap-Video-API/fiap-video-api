@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fiap-video-api-deployment
+  namespace: fiap-video
+  labels:
+    app: fiap-video-api-deployment
+spec:
+  template:
+    metadata:
+      name: fiap-video-api-deployment
+      labels:
+        app: fiap-video-api-deployment
+    spec:
+      containers:
+        - name: fiap-video-api-deployment-container
+          image: jacksoncarbonera/fiap-video-api
+          ports:
+            - containerPort: 3000
+          envFrom:
+          - configMapRef:
+              name: fiap-video-api-config 
+          - secretRef:
+             name: fiap-video-api-secret
+          livenessProbe:
+            httpGet:
+              path: /api
+              port: 3000
+            periodSeconds: 10
+            failureThreshold: 3
+            initialDelaySeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /api
+              port: 3000
+            periodSeconds: 10
+            failureThreshold: 5
+            initialDelaySeconds: 3
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "100Mi"
+            requests:
+              cpu: "50m"
+              memory: "50Mi"
+          volumeMounts:
+            - mountPath: /arquivos
+              name: video-data
+      volumes:
+        - name: video-data
+          persistentVolumeClaim:
+            claimName: fiap-video-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fiap-video-api-deployment
