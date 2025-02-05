@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageCommand } from '@aws-sdk/client-sqs';
-import { IVideoService } from 'src/video/core/application/services/video.service.port';
-import { Video } from 'src/video/core/domain/Video';
-import { IMessageConnectService } from 'src/video/core/application/services/message-connect.service.port';
+import { IVideoService } from '../../core/application/services/video.service.port';
+import { Video } from '../../core/domain/Video';
+import { IMessageConnectService } from '../../core/application/services/message-connect.service.port';
 
 @Injectable()
 export class MessageConnectService implements IMessageConnectService {
@@ -42,10 +42,10 @@ export class MessageConnectService implements IMessageConnectService {
             const video: Video = { ...JSON.parse(message.Body)};
             try {
               await this.videoService.retornoProcessamento(video);
-              await this.excluirVíveoProcessado(message.ReceiptHandle);
+              await this.excluirVideoProcessado(message.ReceiptHandle);
             } catch(error){
               console.error('MessageConnectService: Erro ao processar mensagem:', error);
-              await this.excluirVíveoProcessado(message.ReceiptHandle);
+              await this.excluirVideoProcessado(message.ReceiptHandle);
             }
           }
         }
@@ -77,7 +77,7 @@ export class MessageConnectService implements IMessageConnectService {
     return response.Messages || [];
   }
 
-  async excluirVíveoProcessado(receiptHandle: string): Promise<void> {
+  async excluirVideoProcessado(receiptHandle: string): Promise<void> {
     const command = new DeleteMessageCommand({
       QueueUrl: process.env.QUEUE_PROCESSADOS,
       ReceiptHandle: receiptHandle,

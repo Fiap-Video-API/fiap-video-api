@@ -2,10 +2,10 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Video } from '../../domain/Video';
 import { VideoStatus } from '../../domain/VideoStatus';
 import { IVideoService } from './video.service.port';
-import { IMessageConnectService } from 'src/video/core/application/services/message-connect.service.port';
+import { IMessageConnectService } from '../../../core/application/services/message-connect.service.port';
 import { IVideoRepository } from '../repository/video-repository.port';
-import { Transactional } from 'src/database/transactional';
-import { IEmailService } from 'src/video/core/application/services/email.service.port';
+import { Transactional } from '../../../../database/transactional';
+import { IEmailService } from '../../../core/application/services/email.service.port';
 import { ErroNegocialException } from '../exception/erro-negocial.exception';
 
 @Injectable()
@@ -98,6 +98,4 @@ export class VideoService implements IVideoService {
 
     return video;
   }
-
-  
 }
