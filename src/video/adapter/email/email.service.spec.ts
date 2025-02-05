@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmailService } from './email.service';
-import { IEmailService } from '../../core/application/services/email.service.port';
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 
 jest.mock('@aws-sdk/client-ses');

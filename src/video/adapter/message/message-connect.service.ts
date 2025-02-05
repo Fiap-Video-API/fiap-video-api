@@ -29,17 +29,21 @@ export class MessageConnectService implements IMessageConnectService {
     this.listenQueue();
   }
 
-  async listenQueue() {
-    while (true) {
+  async listenQueue(once = false, forceThrow = false) {
+    do {
       try {
-        
         const messages = await this.receberVideosProcessados(1);
-
+        
         if (messages && messages.length > 0) {
           for (const message of messages) {
-            console.log('MessageConnectService: mensagem recebida ', message.Body);
 
-            const video: Video = { ...JSON.parse(message.Body)};
+            if (forceThrow) {
+              throw new Error('Erro ao processar vídeo');
+            }
+
+            console.log('MessageConnectService: mensagem recebida ', message.Body);
+  
+            const video: Video = { ...JSON.parse(message.Body) };
             try {
               await this.videoService.retornoProcessamento(video);
               await this.excluirVideoProcessado(message.ReceiptHandle);
@@ -52,7 +56,7 @@ export class MessageConnectService implements IMessageConnectService {
       } catch (error) {
         console.error('MessageConnectService: Erro ao receber mensagens:', error);
       }
-    }
+    } while (!once);
   }
 
   async enviarVideoProcessamento(messageBody: string): Promise<void> {
@@ -72,9 +76,9 @@ export class MessageConnectService implements IMessageConnectService {
       WaitTimeSeconds: 60,
       VisibilityTimeout: 10,
     });
-
+  
     const response = await this.client.send(command);
-    return response.Messages || [];
+    return response?.Messages || [];
   }
 
   async excluirVideoProcessado(receiptHandle: string): Promise<void> {

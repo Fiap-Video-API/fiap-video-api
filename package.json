@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:cucumber": "cucumber-js"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.734.0",
@@ -47,9 +48,11 @@
     "uuid": "^11.0.5"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^11.2.0",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^11.0.0",
+    "@types/cucumber": "^7.0.3",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.2",
     "@types/jsonwebtoken": "^9.0.7",
@@ -97,16 +100,9 @@
       "/node_modules/",
       "/src/database/",
       "/src/video/adapter/controller/jwt-auth.guard.ts",
-      "/src/video/adapter/message/",
-      "/src/video/adapter/repository/video-repository.adapter.ts",
       "/src/app.module.ts",
       "/src/video/video.module.ts",
       "/src/main.ts",
-      "/src/video/core/application/services/email.service.port.ts",
-      "/src/video/core/application/services/message-connect.service.port.ts",
-      "/src/video/core/application/services/video.service.port.ts",
-      "/src/video/core/application/exception/",
-      "/src/video/core/application/repository/",
       "/src/video/core/domain/"
     ],
     "coverageThreshold": {

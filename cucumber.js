@@ -1,4 +1,3 @@
 module.exports = {
-    default: `--require-module ts-node/register --require src/features/**/*.steps.ts src/features/*.feature`,
-  };
-  
+  default: `--require-module ts-node/register --require src/video/features/**/*.steps.ts src/video/features/*.feature`,
+};

@@ -1,4 +1,5 @@
-import { Module  } from '@nestjs/common';
+// video.module.ts
+import { Module } from '@nestjs/common';
 import { VideoController } from './adapter/controller/video.controller';
 import { VideoService } from './core/application/services/video.service';
 import { DataSource } from 'typeorm';
@@ -6,20 +7,22 @@ import { VideoEntity } from './adapter/repository/entity/video.entity';
 import { IVideoService } from './core/application/services/video.service.port';
 import { IVideoRepository } from './core/application/repository/video-repository.port';
 import { VideoRepositoryAdapter } from './adapter/repository/video-repository.adapter';
-import { DatabaseModule } from 'src/database/database.module';
 import { SESClient } from '@aws-sdk/client-ses';
 import { IEmailService } from './core/application/services/email.service.port';
 import { EmailService } from './adapter/email/email.service';
 import { IMessageConnectService } from './core/application/services/message-connect.service.port';
 import { MessageConnectService } from './adapter/message/message-connect.service';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
   providers: [
     {
       provide: 'VIDEO_REPOSITORY',
-      useFactory: (dataSource: DataSource) => dataSource.getRepository(VideoEntity),
+      useFactory: (dataSource: DataSource) => {
+        return dataSource.getRepository(VideoEntity);
+      },
       inject: ['DATA_SOURCE'],
-    },
+    },    
     {
       provide: 'SES_CLIENT',
       useFactory: () => {
@@ -52,6 +55,6 @@ import { MessageConnectService } from './adapter/message/message-connect.service
     }
   ],
   controllers: [VideoController],
-  imports: [DatabaseModule],
+  imports: [DatabaseModule]
 })
 export class VideoModule {}
