@@ -24,31 +24,25 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-#    - name: Run Unit Tests
-#      run: npm run test:cov
+    - name: Run Unit Tests
+      run: npm run test:cov
 
-#    - name: Validar cobertura de Testes
-#      run: |
-#        MIN_COVERAGE=80
-#        COVERAGE_JSON=$(cat coverage/coverage-summary.json)
-#        LINE_COVERAGE=$(echo "$COVERAGE_JSON" | jq '.total.lines.pct')
-#        if (( $(echo "$LINE_COVERAGE < $MIN_COVERAGE" | bc -l) )); then
-#          echo "A cobertura de teste está abaixo do limite mínimo de $MIN_COVERAGE%. Cobertura atual: $LINE_COVERAGE%"
-#          exit 1
-#        else
-#          echo "A cobertura da linha atende ao limite mínimo: $LINE_COVERAGE%"
-#        fi
+    - name: Validar cobertura de Testes
+      run: |
+        MIN_COVERAGE=80
+        COVERAGE_JSON=$(cat coverage/coverage-summary.json)
+        LINE_COVERAGE=$(echo "$COVERAGE_JSON" | jq '.total.lines.pct')
+        if (( $(echo "$LINE_COVERAGE < $MIN_COVERAGE" | bc -l) )); then
+          echo "A cobertura de teste está abaixo do limite mínimo de $MIN_COVERAGE%. Cobertura atual: $LINE_COVERAGE%"
+          exit 1
+        else
+          echo "A cobertura da linha atende ao limite mínimo: $LINE_COVERAGE%"
+        fi
 
     - name: Upload results to Codecov
       uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-    
-#    - name: Run Integration Tests
-#      run: npm run test:e2e
-  
-#    - name: Run BDD Tests
-#      run: npm run test:cucumber
     
     - name: Run Build App
       run: npm run build
