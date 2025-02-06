@@ -13,7 +13,14 @@ async function bootstrap() {
     .setTitle('File Upload API')
     .setDescription('API para upload de arquivos grandes usando streams')
     .setVersion('1.0')
-    .build();
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    ).build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

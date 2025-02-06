@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fiap-video-api-config
+  namespace: fiap-video
+  labels:
+    name: fiap-video-api-config
+data:
+  DATABASE_HOST: "terraform-20250205214440423800000004.cvlewvth94ug.us-east-1.rds.amazonaws.com"
+  DATABASE_PORT: "3306"
+  DATABASE_DATABASE: "videos"
+  APPLICATION_PORT: "3000"
+  PATH_PROCESSAR: "/arquivos/processar/"
+  PATH_DOWNLOAD: "/arquivos/processados/"
+  AWS_REGION: "us-east-1"
+  AWS_SES_FROM_EMAIL: "sender@example.com"
+  AWS_COGNITO_USER_POOL_ID: "us-east-1_C3FFk2YxX"
+  AWS_COGNITO_CLIENT_ID: "3261bc38rb1vgpjleomf3pn5or"
+  AWS_COGNITO_PERMIT_ALL: "false"
+  QUEUE_PROCESSAR: "https://sqs.us-east-1.amazonaws.com/756624658310/processar"
+  QUEUE_PROCESSADOS: "https://sqs.us-east-1.amazonaws.com/756624658310/processados"

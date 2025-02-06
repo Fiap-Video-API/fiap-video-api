@@ -11,7 +11,7 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     // execucao de testes
-    if (process.env.AWS_COGNITO_PERMIT_ALL) {
+    if (process.env.AWS_COGNITO_PERMIT_ALL === 'true') {
       request.user = {
         id: "123",
         email: "teste@teste.com"
@@ -44,7 +44,11 @@ export class JwtAuthGuard implements CanActivate {
       }) as JwtPayload;
 
       this.validateTokenClaims(payload);
-      request.user = payload;
+
+      request.user = {
+        id: payload.sub,
+        email: payload.email
+      }
 
       // Verificar se o usuário aceitou os termos da LGPD
       if (payload['custom:lgpdConsent'] !== 'true') {
@@ -81,7 +85,7 @@ export class JwtAuthGuard implements CanActivate {
   }
 
   private validateTokenClaims(payload: JwtPayload): void {
-    const { aud, iss, exp } = payload;
+    const { aud , iss, exp } = payload;
 
     const expectedIssuer = `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`;
 
@@ -89,7 +93,7 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Issuer inválido');
     }
 
-    if (aud !== process.env.AWS_COGNITO_CLIENT_ID) {
+    if (aud  !== process.env.AWS_COGNITO_CLIENT_ID) {
       throw new UnauthorizedException('Audience inválido');
     }
 

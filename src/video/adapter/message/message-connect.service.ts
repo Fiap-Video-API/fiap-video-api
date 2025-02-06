@@ -73,7 +73,7 @@ export class MessageConnectService implements IMessageConnectService {
     const command = new ReceiveMessageCommand({
       QueueUrl: process.env.QUEUE_PROCESSADOS,
       MaxNumberOfMessages: maxMessages,
-      WaitTimeSeconds: 60,
+      WaitTimeSeconds: 20,
       VisibilityTimeout: 10,
     });
   

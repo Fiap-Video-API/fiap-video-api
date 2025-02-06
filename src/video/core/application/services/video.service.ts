@@ -7,6 +7,7 @@ import { IVideoRepository } from '../repository/video-repository.port';
 import { Transactional } from '../../../../database/transactional';
 import { IEmailService } from '../../../core/application/services/email.service.port';
 import { ErroNegocialException } from '../exception/erro-negocial.exception';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class VideoService implements IVideoService {
@@ -15,7 +16,9 @@ export class VideoService implements IVideoService {
     @Inject(forwardRef(() => IMessageConnectService))
     private readonly messageConnectService: IMessageConnectService,
     private readonly videoRepository: IVideoRepository,
-    private readonly emailService: IEmailService
+    private readonly emailService: IEmailService,
+    @Inject('DATA_SOURCE')
+    private readonly dataSource: DataSource
   ){}
 
   @Transactional()
