@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Instalação dos pacotes necessários para o node_modules
 COPY --chown=node:node package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copiando arquivos do projeto e fazendo build da aplicação
 COPY --chown=node:node . .
