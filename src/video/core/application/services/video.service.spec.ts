@@ -6,6 +6,7 @@ import { IEmailService } from '../../../core/application/services/email.service.
 import { Video } from '../../domain/Video';
 import { VideoStatus } from '../../domain/VideoStatus';
 import { ErroNegocialException } from '../exception/erro-negocial.exception';
+import { DataSource } from 'typeorm';
 
 describe('VideoService', () => {
   let service: VideoService;
@@ -35,6 +36,18 @@ describe('VideoService', () => {
           provide: IEmailService,
           useValue: {
             enviarEmail: jest.fn(),
+          },
+        },
+        {
+          provide: 'DATA_SOURCE',
+          useValue: {
+            createQueryRunner: jest.fn().mockReturnValue({
+              connect: jest.fn(),
+              startTransaction: jest.fn(),
+              commitTransaction: jest.fn(),
+              rollbackTransaction: jest.fn(),
+              release: jest.fn(),
+            }),
           },
         },
       ],
@@ -173,7 +186,7 @@ describe('VideoService', () => {
     (videoRepository.adquirirPorID as jest.Mock).mockResolvedValue(mockVideo);
 
     await expect(service.adquirirStatusPorVideo('video123', '123')).rejects.toThrow(
-      new ErroNegocialException('Usuário sem permissão para o acessar dados do vídeo solicitado'),
+      new ErroNegocialException('Usuário sem permissão para acessar dados do vídeo solicitado'),
     );
   });
 });

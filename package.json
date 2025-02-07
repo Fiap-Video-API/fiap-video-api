@@ -103,7 +103,8 @@
       "/src/app.module.ts",
       "/src/video/video.module.ts",
       "/src/main.ts",
-      "/src/video/core/domain/"
+      "/src/video/core/domain/",
+      "/src/video/features/"
     ],
     "coverageThreshold": {
       "global": {

@@ -96,7 +96,7 @@ export class VideoService implements IVideoService {
     const video = await this.videoRepository.adquirirPorID(idVideo);
 
     if (video.idUsuario != idUsuario) {
-      throw new ErroNegocialException(`Usuário sem permissão para o acessar dados do vídeo solicitado`);
+      throw new ErroNegocialException(`Usuário sem permissão para acessar dados do vídeo solicitado`);
     }
 
     return video;
