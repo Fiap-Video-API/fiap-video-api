@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtPayload, decode, verify } from 'jsonwebtoken';
 import axios from 'axios';
-import * as jwkToPem from 'jwk-to-pem';
+import jwkToPem from 'jwk-to-pem';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

@@ -8,8 +8,8 @@ import { Video } from '../../core/domain/Video';
 import { Response } from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
-import { IVideoService } from 'src/video/core/application/services/video.service.port';
-import { JwtAuthGuard } from 'src/video/adapter/controller/jwt-auth.guard';
+import { IVideoService } from '../../core/application/services/video.service.port';
+import { JwtAuthGuard } from '../../adapter/controller/jwt-auth.guard';
 
 @Controller('video')
 @ApiBearerAuth('access-token')

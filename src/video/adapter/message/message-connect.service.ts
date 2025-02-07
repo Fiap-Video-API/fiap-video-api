@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageCommand } from '@aws-sdk/client-sqs';
-import { IVideoService } from 'src/video/core/application/services/video.service.port';
-import { Video } from 'src/video/core/domain/Video';
-import { IMessageConnectService } from 'src/video/core/application/services/message-connect.service.port';
+import { IVideoService } from '../../core/application/services/video.service.port';
+import { Video } from '../../core/domain/Video';
+import { IMessageConnectService } from '../../core/application/services/message-connect.service.port';
 
 @Injectable()
 export class MessageConnectService implements IMessageConnectService {
@@ -29,30 +29,34 @@ export class MessageConnectService implements IMessageConnectService {
     this.listenQueue();
   }
 
-  async listenQueue() {
-    while (true) {
+  async listenQueue(once = false, forceThrow = false) {
+    do {
       try {
-        
         const messages = await this.receberVideosProcessados(1);
-
+        
         if (messages && messages.length > 0) {
           for (const message of messages) {
-            console.log('MessageConnectService: mensagem recebida ', message.Body);
 
-            const video: Video = { ...JSON.parse(message.Body)};
+            if (forceThrow) {
+              throw new Error('Erro ao processar vídeo');
+            }
+
+            console.log('MessageConnectService: mensagem recebida ', message.Body);
+  
+            const video: Video = { ...JSON.parse(message.Body) };
             try {
               await this.videoService.retornoProcessamento(video);
-              await this.excluirVíveoProcessado(message.ReceiptHandle);
+              await this.excluirVideoProcessado(message.ReceiptHandle);
             } catch(error){
               console.error('MessageConnectService: Erro ao processar mensagem:', error);
-              await this.excluirVíveoProcessado(message.ReceiptHandle);
+              await this.excluirVideoProcessado(message.ReceiptHandle);
             }
           }
         }
       } catch (error) {
         console.error('MessageConnectService: Erro ao receber mensagens:', error);
       }
-    }
+    } while (!once);
   }
 
   async enviarVideoProcessamento(messageBody: string): Promise<void> {
@@ -72,12 +76,12 @@ export class MessageConnectService implements IMessageConnectService {
       WaitTimeSeconds: 20,
       VisibilityTimeout: 10,
     });
-
+  
     const response = await this.client.send(command);
-    return response.Messages || [];
+    return response?.Messages || [];
   }
 
-  async excluirVíveoProcessado(receiptHandle: string): Promise<void> {
+  async excluirVideoProcessado(receiptHandle: string): Promise<void> {
     const command = new DeleteMessageCommand({
       QueueUrl: process.env.QUEUE_PROCESSADOS,
       ReceiptHandle: receiptHandle,
